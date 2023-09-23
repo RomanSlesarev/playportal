@@ -1,0 +1,30 @@
+﻿@page "/{GameId}"
+@using Microsoft.AspNetCore.SignalR.Client;
+
+
+@GameId
+
+
+@inject NavigationManager Navigation
+
+@code {
+    [Parameter]
+    public string GameId { get; set; }
+
+    private HubConnection? _hubConnection;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _hubConnection = new HubConnectionBuilder()
+            .WithUrl(Navigation.ToAbsoluteUri("/rjombaHub"))
+            .Build();
+
+        //_hubConnection.On<string, string>("InitializeGame", (GameId) =>
+        //{
+        //});
+
+        await _hubConnection.StartAsync();
+
+        await _hubConnection.SendAsync("InitializeGame", GameId);
+    }
+}
